@@ -19,7 +19,7 @@ class OptionService {
         return options
     }
     async create(OptionDto) {
-        const category = await this.#categoryService.chechExistByID(OptionDto.category);
+        const category = await this.#categoryService.checkExistByID(OptionDto.category);
         OptionDto.category = category._id;
         OptionDto.key = slugify(OptionDto.key, { trim: true, replacement: "_", lower: true });
         await this.alreadyExistbyCategoryAndKey(OptionDto.key, OptionDto._id)
@@ -66,11 +66,11 @@ class OptionService {
         return options
     }
     async findById(id) {
-        return await this.chechExistByID(id);
+        return await this.checkExistByID(id);
     }
 
     async removeById(id) {
-        await this.chechExistByID(id);
+        await this.checkExistByID(id);
         return await this.#model.deleteOne({ _id: id });
     }
 
@@ -78,7 +78,7 @@ class OptionService {
         return await this.#model.find({ category }, { __v: 0 }).populate([{ path: "category", select: { name: 1, slug: 1 } }]);
     }
 
-    async chechExistByID(id) {
+    async checkExistByID(id) {
         const option = await this.#model.findById(id);
         if (!option) throw new createHTTPError.NotFound(OptionMessage.notFound);
         return option;
