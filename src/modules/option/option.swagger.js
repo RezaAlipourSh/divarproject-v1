@@ -38,6 +38,30 @@
  *                      type: array
  *                      items:
  *                          type: string
+ *          UpdateOption:
+ *              type: object
+ *              properties:
+ *                  title:
+ *                      type: string
+ *                  key:
+ *                      type: string
+ *                  guide:
+ *                      type: string
+ *                  required:
+ *                      type: boolean
+ *                  category:
+ *                      type: string
+ *                  type:
+ *                      type: string
+ *                      enum:
+ *                          -   number
+ *                          -   string
+ *                          -   boolean
+ *                          -   array
+ *                  enum:
+ *                      type: array
+ *                      items:
+ *                          type: string
  */
 
 /**
@@ -51,14 +75,35 @@
  *          content:
  *              application/x-www-form-urlencoded:
  *                  schema:
+ *                      $ref: '#/components/schemas/UpdateOption'
+ *              application/json:
+ *                  schema:
+ *                      $ref: '#/components/schemas/UpdateOption'
+ *      responses:
+ *          201:
+ *              description:  created
+ */
+
+/**
+ * @swagger
+ * /option/{id}:
+ *  put:
+ *      summary: Update Option
+ *      tags:
+ *          -   Option
+ *      requestBody:
+ *          content:
+ *              application/x-www-form-urlencoded:
+ *                  schema:
  *                      $ref: '#/components/schemas/CreateOption'
  *              application/json:
  *                  schema:
  *                      $ref: '#/components/schemas/CreateOption'
  *      responses:
- *          201:
- *              description:  created
+ *          200:
+ *              description:  updated
  */
+
 
 /**
  * @swagger
@@ -98,7 +143,7 @@
  * @swagger
  * /option/{id}:
  *  get:
- *      summary: get  Option By Id
+ *      summary: get Option By Id
  *      tags:
  *          -   Option
  *      parameters:
@@ -108,7 +153,6 @@
  *      responses:
  *          200:
  *              description: succesfully
- * 
  */
 
 

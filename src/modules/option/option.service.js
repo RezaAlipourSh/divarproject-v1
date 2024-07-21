@@ -5,6 +5,7 @@ const { OptionMessage } = require("./Option.message");
 const CategoryService = require("../category/category.service")
 const { default: slugify } = require("slugify");
 const { isTrue, isFalse } = require("../../common/utils/functions");
+const { isValidObjectId } = require("mongoose");
 
 class OptionService {
     #model
@@ -25,13 +26,38 @@ class OptionService {
         await this.alreadyExistbyCategoryAndKey(OptionDto.key, OptionDto._id)
         if (OptionDto?.enum && typeof OptionDto.enum === "string") {
             OptionDto.enum = OptionDto.enum.split(",")
-        } else if (Array.isArray(OptionDto.enum)) OptionDto.enum = [];
+        } else if (!Array.isArray(OptionDto.enum)) OptionDto.enum = [];
         if (isTrue(OptionDto?.required)) OptionDto.required = true;
         if (isFalse(OptionDto?.required)) OptionDto.required = false;
         const option = await this.#model.create(OptionDto);
         return option;
 
     }
+    async update(id, optionDto) {
+        const existOption = await this.checkExistByID(id);
+        if (optionDto.category && isValidObjectId(optionDto.category)) {
+            const category = await this.#categoryService.chechExistByID(optionDto.category);
+            optionDto.category = category._id
+        } else {
+            delete optionDto.category
+        }
+        if (optionDto.slug) {
+            optionDto.key = slugify(optionDto.key, { trim: true, replacement: "_", lower: true });
+            let categoryId = existOption.category;
+            if (optionDto.category) categoryId = optionDto.category;
+            await this.alreadyExistbyCategoryAndKey(optionDto.key, categoryId);
+        }
+        if (optionDto?.enum && typeof optionDto.enum === "string") {
+            optionDto.enum = optionDto.enum.split(",")
+        } else if (!Array.isArray(optionDto.enum)) delete optionDto.enum;
+        if (isTrue(optionDto?.required)) optionDto.required = true;
+        else if (isFalse(optionDto?.required)) optionDto.required = false;
+        else delete optionDto?.required
+        return await this.#model.updateOne({ _id: id }, { $set: optionDto })
+    }
+
+
+
     async findByCategorySlug(slug) {
         const options = await this.#model.aggregate([
             {

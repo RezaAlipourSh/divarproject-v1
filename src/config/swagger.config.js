@@ -16,7 +16,7 @@ function swaggerConfig(app) {
         });
 
         const swagger = swaggerUi.setup(swaggerDocument, {});
-        app.use("/", swaggerUi.serve, swagger)
+        app.use("/swagger", swaggerUi.serve, swagger)
     } catch (error) {
         console.log(error)
     }
